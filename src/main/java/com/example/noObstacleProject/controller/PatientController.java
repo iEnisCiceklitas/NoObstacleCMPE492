@@ -1,6 +1,8 @@
 package com.example.noObstacleProject.controller;
 import com.example.noObstacleProject.model.Patient;
+import com.example.noObstacleProject.model.User;
 import com.example.noObstacleProject.service.PatientService;
+import com.example.noObstacleProject.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,19 +15,23 @@ public class PatientController {
     @Autowired
     private PatientService patientService;
 
-    @PostMapping("/register")
-    public ResponseEntity<Patient> registerPatient(@Valid @RequestBody Patient patient) {
-        Patient savedPatient = patientService.savePatient(patient);
-        return ResponseEntity.ok(savedPatient);
+    @Autowired
+    private UserService userService;
+
+    @PostMapping("/{username}/register")
+    public ResponseEntity<Patient> registerPatient(@Valid @RequestBody Patient patient,@PathVariable String username) {
+        User user = userService.findByUsername(username);
+        user.setPatient(patient);
+        userService.saveUser(user);
+
+        return ResponseEntity.ok(user.getPatient());
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Patient> getPatient(@PathVariable Long id) {
-        Patient patient = patientService.getPatientById(id);
-        if (patient != null) {
+    @GetMapping("/{name}")
+    public ResponseEntity<Patient> getPatient(@PathVariable String name) {
+        Patient patient = userService.findByUsername(name).getPatient();
+
             return ResponseEntity.ok(patient);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+
     }
 }

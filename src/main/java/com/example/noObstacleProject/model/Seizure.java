@@ -1,8 +1,11 @@
 package com.example.noObstacleProject.model;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import lombok.Data;
 
 @Entity
+@Data
 @Table(name = "seizures")
 public class Seizure {
     @Id
@@ -18,13 +21,8 @@ public class Seizure {
     @Column(nullable = false)
     private String location;  // Hasta konumu
 
-    // Getters and Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public LocalDateTime getSeizureTime() { return seizureTime; }
-    public void setSeizureTime(LocalDateTime seizureTime) { this.seizureTime = seizureTime; }
-    public Integer getDuration() { return duration; }
-    public void setDuration(Integer duration) { this.duration = duration; }
-    public String getLocation() { return location; }
-    public void setLocation(String location) { this.location = location; }
+    @JsonBackReference
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 }
